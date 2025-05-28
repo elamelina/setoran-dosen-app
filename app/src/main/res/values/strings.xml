@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Setoran Dosen</string>
+    <string name="login_title">Login Dosen</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">LOGIN</string>
+    <string name="dashboard_title">Dashboard Dosen</string>
+    <string name="detail_setoran_title">Detail Setoran</string>
+    <string name="logout">Logout</string>
+    <string name="refresh">Refresh</string>
+    <string name="total_setoran">Total Setoran</string>
+    <string name="selesai">Selesai</string>
+    <string name="belum_selesai">Belum Selesai</string>
+    <string name="loading">Loading...</string>
+    <string name="error_login">Username atau password salah</string>
+    <string name="error_network">Koneksi bermasalah</string>
+    <string name="login_success">Login berhasil</string>
+</resources>
