@@ -16,7 +16,7 @@ class PaMahasiswaAdapter(
     class PaMahasiswaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvNama: TextView = itemView.findViewById(R.id.tvNama)
         val tvNim: TextView = itemView.findViewById(R.id.tvNim)
-        val tvProdi: TextView = itemView.findViewById(R.id.tvProdi)
+        val tvAngkatan: TextView = itemView.findViewById(R.id.tvAngkatan)
         val tvTotalSetoran: TextView = itemView.findViewById(R.id.tvTotalSetoran)
         val tvLastSetoran: TextView = itemView.findViewById(R.id.tvLastSetoran)
     }
@@ -28,17 +28,17 @@ class PaMahasiswaAdapter(
     }
 
     override fun onBindViewHolder(holder: PaMahasiswaViewHolder, position: Int) {
-        val mahasiswa = paMahasiswaList[position]
+        val mhs = paMahasiswaList[position]
 
-        holder.tvNama.text = mahasiswa.nama
-        holder.tvNim.text = mahasiswa.nim
-        holder.tvProdi.text = mahasiswa.prodi ?: "-"
-        holder.tvTotalSetoran.text = "Total Setoran: ${mahasiswa.totalSetoran}"
-        holder.tvLastSetoran.text = "Terakhir: ${mahasiswa.lastSetoran ?: "Belum ada"}"
+        holder.tvNama.text = mhs.nama
+        holder.tvNim.text = mhs.nim
+        holder.tvAngkatan.text = mhs.angkatan  // tampilkan angkatan. Ubah sesuai kebutuhan UI.
 
-        holder.itemView.setOnClickListener {
-            onItemClick(mahasiswa)
-        }
+        // Data setoran dari infoSetoran
+        holder.tvTotalSetoran.text = "Total Setoran: ${mhs.infoSetoran.totalSudahSetor}"
+        holder.tvLastSetoran.text = "Terakhir: ${mhs.infoSetoran.tglTerakhirSetor ?: "Belum ada"}"
+
+        holder.itemView.setOnClickListener { onItemClick(mhs) }
     }
 
     override fun getItemCount(): Int = paMahasiswaList.size

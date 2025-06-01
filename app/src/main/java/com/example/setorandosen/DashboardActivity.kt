@@ -6,7 +6,10 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.ProgressBar
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -21,9 +24,12 @@ import kotlinx.coroutines.launch
 class DashboardActivity : AppCompatActivity() {
     private lateinit var rvPaMahasiswa: RecyclerView
     private lateinit var progressBar: ProgressBar
+    private lateinit var spinnerAngkatan: Spinner
     private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     private lateinit var paMahasiswaAdapter: PaMahasiswaAdapter
+
     private val paMahasiswaList = mutableListOf<PaMahasiswa>()
+    private var semuaMahasiswa: List<PaMahasiswa> = emptyList()
 
     companion object {
         private const val TAG = "DashboardActivity"
@@ -43,79 +49,102 @@ class DashboardActivity : AppCompatActivity() {
     private fun initViews() {
         rvPaMahasiswa = findViewById(R.id.rvPaMahasiswa)
         progressBar = findViewById(R.id.progressBar)
+        spinnerAngkatan = findViewById(R.id.spinnerAngkatan)
         sharedPreferencesHelper = SharedPreferencesHelper(this)
     }
 
     private fun setupRecyclerView() {
-        paMahasiswaAdapter = PaMahasiswaAdapter(paMahasiswaList) { mahasiswa ->
-            // Handle click to view detail setoran mahasiswa
-            val intent = Intent(this, DetailSetoranActivity::class.java)
-            intent.putExtra("nim", mahasiswa.nim)
-            intent.putExtra("nama", mahasiswa.nama)
-            startActivity(intent)
+        paMahasiswaAdapter = PaMahasiswaAdapter(paMahasiswaList) { mhs ->
+            startActivity(Intent(this, DetailSetoranActivity::class.java).apply {
+                putExtra("nim", mhs.nim)
+                putExtra("nama", mhs.nama)
+            })
         }
-        rvPaMahasiswa.apply {
-            layoutManager = LinearLayoutManager(this@DashboardActivity)
-            adapter = paMahasiswaAdapter
+        rvPaMahasiswa.layoutManager = LinearLayoutManager(this)
+        rvPaMahasiswa.adapter = paMahasiswaAdapter
+    }
+
+    private fun setupSpinnerFilter(daftar: List<PaMahasiswa>) {
+        val angkatanList = daftar.map { it.angkatan.toString() }.distinct().sorted()
+        val options = listOf("Semua") + angkatanList
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerAngkatan.adapter = adapter
+
+        spinnerAngkatan.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>, view: View?, position: Int, id: Long
+            ) {
+                val selected = options[position]
+                val filtered = if (selected == "Semua") semuaMahasiswa
+                else semuaMahasiswa.filter { it.angkatan == selected }
+
+                paMahasiswaList.clear()
+                paMahasiswaList.addAll(filtered)
+                paMahasiswaAdapter.notifyDataSetChanged()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
     }
 
     private fun loadPaMahasiswa() {
         val token = sharedPreferencesHelper.getToken()
-        if (token == null) {
-            Log.e(TAG, "Token is null, redirecting to login")
-            logout()
-            return
+        if (token.isNullOrEmpty()) {
+            logout(); return
         }
-
-        Log.d(TAG, "Loading PA Mahasiswa with token")
         showLoading(true)
-
         lifecycleScope.launch {
             try {
-                val response = RetrofitClient.apiService.getPaMahasiswa("Bearer $token")
+                val resp = RetrofitClient.apiService.getPaMahasiswa("Bearer $token")
+                Log.d(TAG, "Response code: ${resp.code()}")
 
-                Log.d(TAG, "Response code: ${response.code()}")
-                Log.d(TAG, "Response message: ${response.message()}")
+                if (resp.isSuccessful) {
+                    val body = resp.body()
+                    val daftar = body?.data?.infoMahasiswaPa?.daftarMahasiswa
 
-                if (response.isSuccessful && response.body() != null) {
-                    val paMahasiswaResponse = response.body()!!
-                    Log.d(TAG, "Received ${paMahasiswaResponse.data.size} PA mahasiswa")
+                    if (!daftar.isNullOrEmpty()) {
+                        Log.d(TAG, "Received ${daftar.size} PA mahasiswa")
+                        paMahasiswaList.clear()
+                        paMahasiswaList.addAll(daftar)
+                        paMahasiswaAdapter.notifyDataSetChanged()
 
-                    paMahasiswaList.clear()
-                    paMahasiswaList.addAll(paMahasiswaResponse.data)
-                    paMahasiswaAdapter.notifyDataSetChanged()
-
-                    if (paMahasiswaList.isEmpty()) {
-                        Toast.makeText(this@DashboardActivity, "Tidak ada data PA mahasiswa", Toast.LENGTH_SHORT).show()
+                        semuaMahasiswa = daftar
+                        setupSpinnerFilter(daftar)
+                    } else {
+                        Toast.makeText(this@DashboardActivity,"Tidak ada data PA mahasiswa",Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, "items atau data null → daftarMahasiswa = $daftar")
                     }
                 } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e(TAG, "Failed to load PA mahasiswa - Code: ${response.code()}")
-                    Log.e(TAG, "Error body: $errorBody")
-
-                    when (response.code()) {
-                        401 -> {
-                            Toast.makeText(this@DashboardActivity, "Token expired, silakan login kembali", Toast.LENGTH_SHORT).show()
-                            logout()
-                        }
-                        403 -> Toast.makeText(this@DashboardActivity, "Akses ditolak", Toast.LENGTH_SHORT).show()
-                        404 -> Toast.makeText(this@DashboardActivity, "Endpoint tidak ditemukan", Toast.LENGTH_SHORT).show()
-                        else -> Toast.makeText(this@DashboardActivity, "Gagal memuat data (${response.code()})", Toast.LENGTH_SHORT).show()
-                    }
+                    handleErrorCode(resp.code(), resp.errorBody()?.string())
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Exception while loading PA mahasiswa", e)
-                val errorMessage = when {
-                    e.message?.contains("timeout") == true -> "Koneksi timeout"
-                    e.message?.contains("Unable to resolve host") == true -> "Tidak dapat terhubung ke server"
-                    else -> "Error: ${e.message}"
-                }
-                Toast.makeText(this@DashboardActivity, errorMessage, Toast.LENGTH_LONG).show()
+                handleException(e)
             } finally {
                 showLoading(false)
             }
         }
+    }
+
+    private fun handleErrorCode(code: Int, body: String?) {
+        Log.e(TAG, "Failed load PA mahasiswa – Code: $code, body: $body")
+        when (code) {
+            401 -> { Toast.makeText(this, "Token expired, silakan login kembali", Toast.LENGTH_SHORT).show(); logout() }
+            403 -> Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
+            404 -> Toast.makeText(this, "Endpoint tidak ditemukan", Toast.LENGTH_SHORT).show()
+            else -> Toast.makeText(this, "Gagal memuat data ($code)", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun handleException(e: Exception) {
+        Log.e(TAG, "Exception", e)
+        val msg = when {
+            e.message?.contains("timeout", true) == true -> "Koneksi timeout"
+            e.message?.contains("Unable to resolve host", true) == true -> "Tidak dapat terhubung ke server"
+            else -> e.message
+        }
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
 
     private fun showLoading(show: Boolean) {
@@ -123,22 +152,13 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.dashboard_menu, menu)
-        return true
+        menuInflater.inflate(R.menu.dashboard_menu, menu); return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_logout -> {
-                logout()
-                true
-            }
-            R.id.action_refresh -> {
-                loadPaMahasiswa()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_logout -> { logout(); true }
+        R.id.action_refresh -> { loadPaMahasiswa(); true }
+        else -> super.onOptionsItemSelected(item)
     }
 
     private fun logout() {
