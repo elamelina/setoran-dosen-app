@@ -10,7 +10,9 @@ interface AuthService {
     suspend fun login(
         @Field("grant_type") grantType: String,
         @Field("client_id") clientId: String,
+        @Field("client_secret") clientSecret: String,
         @Field("username") username: String,
-        @Field("password") password: String
+        @Field("password") password: String,
+        @Field("scope") scope: String
     ): Response<LoginResponse>
 }

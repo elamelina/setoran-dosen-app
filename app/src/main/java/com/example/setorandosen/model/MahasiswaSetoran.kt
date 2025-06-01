@@ -1,5 +1,4 @@
 package com.example.setorandosen.model
-import java.util.Date
 
 data class MahasiswaSetoran(
     val id: String,
@@ -12,10 +11,4 @@ data class MahasiswaSetoran(
     val feedback: String?,
     val created_at: String?,
     val updated_at: String?
-)
-
-data class MahasiswaSetoranResponse(
-    val status: String,
-    val message: String,
-    val data: List<MahasiswaSetoran>
 )

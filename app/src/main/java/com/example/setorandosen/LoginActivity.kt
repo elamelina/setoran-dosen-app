@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.setorandosen.api.RetrofitClient
 import com.example.setorandosen.model.ErrorResponse
+import com.example.setorandosen.model.LoginRequest
 import com.example.setorandosen.utils.SharedPreferencesHelper
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
@@ -34,25 +35,23 @@ class LoginActivity : AppCompatActivity() {
         initViews()
         sharedPreferencesHelper = SharedPreferencesHelper(this)
 
-        // Check if already logged in
+        // Jika sudah login, langsung ke Dashboard
         if (sharedPreferencesHelper.isLoggedIn()) {
             navigateToDashboard()
             return
         }
 
-        // Pre-fill dengan data yang diberikan
+        // Pre‑fill kredensial contoh (hapus di produksi)
         etUsername.setText("fitri.insani@uin-suska.ac.id")
         etPassword.setText("setorantif2025")
 
-        btnLogin.setOnClickListener {
-            login()
-        }
+        btnLogin.setOnClickListener { login() }
     }
 
     private fun initViews() {
-        etUsername = findViewById(R.id.etUsername)
-        etPassword = findViewById(R.id.etPassword)
-        btnLogin = findViewById(R.id.btnLogin)
+        etUsername  = findViewById(R.id.etUsername)
+        etPassword  = findViewById(R.id.etPassword)
+        btnLogin    = findViewById(R.id.btnLogin)
         progressBar = findViewById(R.id.progressBar)
     }
 
@@ -67,15 +66,20 @@ class LoginActivity : AppCompatActivity() {
 
         showLoading(true)
 
+        // 🔑 Buat objek LoginRequest (grant_type & client_id sudah default)
+        val loginRequest = LoginRequest(username = username, password = password)
+
         lifecycleScope.launch {
             try {
                 Log.d(TAG, "Attempting login for user: $username")
 
                 val response = RetrofitClient.authService.login(
-                    grantType = "password",
-                    clientId = "setoran-dosen",
-                    username = username,
-                    password = password
+                    grantType = loginRequest.grant_type,
+                    clientId  = loginRequest.client_id,
+                    clientSecret = loginRequest.client_secret,
+                    username  = loginRequest.username,
+                    password  = loginRequest.password,
+                    scope = loginRequest.scope
                 )
 
                 Log.d(TAG, "Response code: ${response.code()}")
@@ -86,12 +90,11 @@ class LoginActivity : AppCompatActivity() {
                     response.isSuccessful && response.body() != null -> {
                         val loginResponse = response.body()!!
 
-                        // Validate token
                         if (loginResponse.access_token.isNotEmpty()) {
-                            // Save token and login status
+                            // Simpan token & status login
                             sharedPreferencesHelper.saveToken(loginResponse.access_token)
-                            if (loginResponse.refresh_token != null) {
-                                sharedPreferencesHelper.saveRefreshToken(loginResponse.refresh_token)
+                            loginResponse.refresh_token?.let {
+                                sharedPreferencesHelper.saveRefreshToken(it)
                             }
                             sharedPreferencesHelper.saveLoginStatus(true)
                             sharedPreferencesHelper.saveUserInfo(username)
@@ -103,13 +106,10 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
                     response.code() == 401 -> {
-                        // Parse error response
                         val errorBody = response.errorBody()?.string()
                         val errorResponse = try {
                             Gson().fromJson(errorBody, ErrorResponse::class.java)
-                        } catch (e: Exception) {
-                            null
-                        }
+                        } catch (e: Exception) { null }
 
                         val errorMessage = errorResponse?.error_description ?: "Username atau password salah"
                         Toast.makeText(this@LoginActivity, errorMessage, Toast.LENGTH_SHORT).show()
