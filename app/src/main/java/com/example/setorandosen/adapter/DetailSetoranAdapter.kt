@@ -14,17 +14,20 @@ class DetailSetoranAdapter(
     private val suratList: List<DetailSurat>,
     private val logList: List<LogSetoran>,
     private val onDeleteSetoran: (DetailSurat) -> Unit,
+    private val onAddSetoran: (DetailSurat) -> Unit,
     private val onValidateSetoran: (DetailSurat) -> Unit
 ) : RecyclerView.Adapter<DetailSetoranAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvNamaSurat: TextView = itemView.findViewById(R.id.tvNamaSurat)
+        val tvSyarat: TextView = itemView.findViewById(R.id.tvSyarat)
         val tvStatusSurat: TextView = itemView.findViewById(R.id.tvStatusSurat)
         val tvTanggalSetor: TextView = itemView.findViewById(R.id.tvTanggalSetor)
         val tvKeterangan: TextView = itemView.findViewById(R.id.tvKeterangan)
 
         val layoutActions: View = itemView.findViewById(R.id.layoutActions)
         val btnHapusSetoran: Button = itemView.findViewById(R.id.btnHapusSetoran)
+        val btnTambahSetoran: Button = itemView.findViewById(R.id.btnTambahSetoran)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,7 +40,8 @@ class DetailSetoranAdapter(
         val surat = suratList[position]
 
         // Nama surat dan label
-        holder.tvNamaSurat.text = "${surat.nama} (${surat.label})"
+        holder.tvNamaSurat.text = surat.nama
+        holder.tvSyarat.text = "Syarat: (${surat.label})"
 
         if (surat.sudahSetor) {
             // Jika sudah setor
@@ -79,8 +83,13 @@ class DetailSetoranAdapter(
             holder.tvTanggalSetor.visibility = View.GONE
             holder.tvKeterangan.visibility = View.GONE
 
-            // Tombol aksi disembunyikan
-            holder.layoutActions.visibility = View.GONE
+            // Tombol aksi ditampilkan
+            holder.layoutActions.visibility = View.VISIBLE
+            holder.btnTambahSetoran.visibility = View.VISIBLE
+
+            holder.btnTambahSetoran.setOnClickListener {
+                suratList.getOrNull(holder.bindingAdapterPosition)?.let(onAddSetoran)
+            }
         }
     }
 

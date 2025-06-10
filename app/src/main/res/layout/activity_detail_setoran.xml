@@ -205,12 +205,6 @@
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_detail_setoran" />
 
-            <Button
-                android:id="@+id/btnTambah"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tambah" />
-
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
@@ -222,17 +216,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone" />
-
-    <!-- Floating Action Button -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAdd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:contentDescription="@string/add_surat"
-        android:src="@drawable/ic_add"
-        app:backgroundTint="@color/primary_color"
-        app:tint="@android:color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -48,7 +48,6 @@ class DetailSetoranActivity : AppCompatActivity() {
         tvAngkatan = findViewById(R.id.tvAngkatan)
         tvSemester = findViewById(R.id.tvSemester)
         tvDosenPa = findViewById(R.id.tvDosenPa)
-        btnTambah = findViewById(R.id.btnTambah)
 
         nim = intent.getStringExtra("nim")
         sharedPref = SharedPreferencesHelper(this)
@@ -58,10 +57,6 @@ class DetailSetoranActivity : AppCompatActivity() {
             Toast.makeText(this, "Token atau NIM tidak valid", Toast.LENGTH_SHORT).show()
             finish()
             return
-        }
-
-        btnTambah.setOnClickListener {
-            showTambahDialog()
         }
 
         getDetailSetoran(token!!, nim!!)
@@ -100,6 +95,9 @@ class DetailSetoranActivity : AppCompatActivity() {
             suratList,
             logList,
             onDeleteSetoran = { surat ->
+                Toast.makeText(this, "Hapus setoran: ${surat.nama}", Toast.LENGTH_SHORT).show()
+            },
+            onAddSetoran = { surat ->
                 Toast.makeText(this, "Hapus setoran: ${surat.nama}", Toast.LENGTH_SHORT).show()
             },
             onValidateSetoran = { surat ->

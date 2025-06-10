@@ -24,6 +24,16 @@
             android:textStyle="bold"
             android:textColor="?android:textColorPrimary" />
 
+        <!-- Syarat -->
+        <TextView
+            android:id="@+id/tvSyarat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Syarat"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="?android:textColorSecondary" />
+
         <!-- Status -->
         <TextView
             android:id="@+id/tvStatusSurat"
@@ -67,6 +77,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hapus"
+                android:layout_marginStart="8dp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnTambahSetoran"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tambah"
                 android:layout_marginStart="8dp"
                 android:visibility="gone" />
 
