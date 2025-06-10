@@ -25,7 +25,6 @@ class DetailSetoranAdapter(
 
         val layoutActions: View = itemView.findViewById(R.id.layoutActions)
         val btnHapusSetoran: Button = itemView.findViewById(R.id.btnHapusSetoran)
-        val btnValidasiSetoran: Button = itemView.findViewById(R.id.btnValidasiSetoran)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -67,15 +66,11 @@ class DetailSetoranAdapter(
             // Tombol aksi ditampilkan
             holder.layoutActions.visibility = View.VISIBLE
             holder.btnHapusSetoran.visibility = View.VISIBLE
-            holder.btnValidasiSetoran.visibility = View.VISIBLE
 
             holder.btnHapusSetoran.setOnClickListener {
                 suratList.getOrNull(holder.bindingAdapterPosition)?.let(onDeleteSetoran)
             }
 
-            holder.btnValidasiSetoran.setOnClickListener {
-                suratList.getOrNull(holder.bindingAdapterPosition)?.let(onValidateSetoran)
-            }
         } else {
             // Jika belum setor
             holder.tvStatusSurat.text = "Belum Setor"
