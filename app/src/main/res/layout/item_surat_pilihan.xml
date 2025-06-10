@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <CheckBox
+        android:id="@+id/checkboxSurat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:focusableInTouchMode="false" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvNamaSurat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Al-Fatihah"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvJumlahAyat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="7 ayat"
+            android:textSize="14sp"
+            android:textColor="#666" />
+    </LinearLayout>
+</LinearLayout>

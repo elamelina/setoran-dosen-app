@@ -1,7 +1,8 @@
+// Updated ApiService.kt
 package com.example.setorandosen.api
 
-import com.example.setorandosen.model.PaMahasiswaResponse
-import com.example.setorandosen.model.MahasiswaSetoranResponse
+import com.example.setorandosen.model.*
+import com.google.gson.annotations.SerializedName
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -13,8 +14,22 @@ interface ApiService {
     ): Response<PaMahasiswaResponse>
 
     @GET("mahasiswa/setoran/{nim}")
-    suspend fun getSetoranMahasiswa(
+    suspend fun getDetailSetoranMahasiswa(
         @Header("Authorization") token: String,
         @Path("nim") nim: String
-    ): Response<MahasiswaSetoranResponse>
+    ): Response<DetailSetoranResponse>
+
+    @POST("mahasiswa/setoran/{nim}")
+    suspend fun simpanSetoran(
+        @Header("Authorization") token: String,
+        @Path("nim") nim: String,
+        @Body request: SimpanSetoranRequest
+    ): Response<GenericResponse>
+
+
+    @GET("mahasiswa/setoran/{nim}/riwayat")
+    suspend fun getRiwayatSetoran(
+        @Header("Authorization") token: String,
+        @Path("nim") nim: String
+    ): Response<RiwayatSetoranResponse>
 }

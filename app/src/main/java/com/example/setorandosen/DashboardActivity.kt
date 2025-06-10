@@ -18,10 +18,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.setorandosen.adapter.PaMahasiswaAdapter
 import com.example.setorandosen.api.RetrofitClient
 import com.example.setorandosen.model.PaMahasiswa
+import com.example.setorandosen.ui.DetailSetoranActivity
+import com.example.setorandosen.LoginActivity
 import com.example.setorandosen.utils.SharedPreferencesHelper
 import kotlinx.coroutines.launch
 
 class DashboardActivity : AppCompatActivity() {
+
     private lateinit var rvPaMahasiswa: RecyclerView
     private lateinit var progressBar: ProgressBar
     private lateinit var spinnerAngkatan: Spinner
@@ -55,17 +58,17 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         paMahasiswaAdapter = PaMahasiswaAdapter(paMahasiswaList) { mhs ->
-            startActivity(Intent(this, DetailSetoranActivity::class.java).apply {
-                putExtra("nim", mhs.nim)
-                putExtra("nama", mhs.nama)
-            })
+            val intent = Intent(this, DetailSetoranActivity::class.java)
+            intent.putExtra("nim", mhs.nim)
+            intent.putExtra("nama", mhs.nama)
+            startActivity(intent)
         }
         rvPaMahasiswa.layoutManager = LinearLayoutManager(this)
         rvPaMahasiswa.adapter = paMahasiswaAdapter
     }
 
     private fun setupSpinnerFilter(daftar: List<PaMahasiswa>) {
-        val angkatanList = daftar.map { it.angkatan.toString() }.distinct().sorted()
+        val angkatanList = daftar.map { it.angkatan }.distinct().sorted()
         val options = listOf("Semua") + angkatanList
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
@@ -73,16 +76,12 @@ class DashboardActivity : AppCompatActivity() {
         spinnerAngkatan.adapter = adapter
 
         spinnerAngkatan.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>, view: View?, position: Int, id: Long
-            ) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selected = options[position]
                 val filtered = if (selected == "Semua") semuaMahasiswa
                 else semuaMahasiswa.filter { it.angkatan == selected }
 
-                paMahasiswaList.clear()
-                paMahasiswaList.addAll(filtered)
-                paMahasiswaAdapter.notifyDataSetChanged()
+                paMahasiswaAdapter.updateData(filtered)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -92,32 +91,32 @@ class DashboardActivity : AppCompatActivity() {
     private fun loadPaMahasiswa() {
         val token = sharedPreferencesHelper.getToken()
         if (token.isNullOrEmpty()) {
-            logout(); return
+            logout()
+            return
         }
+
         showLoading(true)
+
         lifecycleScope.launch {
             try {
-                val resp = RetrofitClient.apiService.getPaMahasiswa("Bearer $token")
-                Log.d(TAG, "Response code: ${resp.code()}")
+                val response = RetrofitClient.apiService.getPaMahasiswa("Bearer $token")
+                Log.d(TAG, "Response code: ${response.code()}")
 
-                if (resp.isSuccessful) {
-                    val body = resp.body()
+                if (response.isSuccessful) {
+                    val body = response.body()
                     val daftar = body?.data?.infoMahasiswaPa?.daftarMahasiswa
 
                     if (!daftar.isNullOrEmpty()) {
-                        Log.d(TAG, "Received ${daftar.size} PA mahasiswa")
                         paMahasiswaList.clear()
                         paMahasiswaList.addAll(daftar)
                         paMahasiswaAdapter.notifyDataSetChanged()
-
                         semuaMahasiswa = daftar
                         setupSpinnerFilter(daftar)
                     } else {
-                        Toast.makeText(this@DashboardActivity,"Tidak ada data PA mahasiswa",Toast.LENGTH_SHORT).show()
-                        Log.e(TAG, "items atau data null → daftarMahasiswa = $daftar")
+                        Toast.makeText(this@DashboardActivity, "Tidak ada data PA mahasiswa", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    handleErrorCode(resp.code(), resp.errorBody()?.string())
+                    handleErrorCode(response.code(), response.errorBody()?.string())
                 }
             } catch (e: Exception) {
                 handleException(e)
@@ -128,9 +127,12 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun handleErrorCode(code: Int, body: String?) {
-        Log.e(TAG, "Failed load PA mahasiswa – Code: $code, body: $body")
+        Log.e(TAG, "Error $code: $body")
         when (code) {
-            401 -> { Toast.makeText(this, "Token expired, silakan login kembali", Toast.LENGTH_SHORT).show(); logout() }
+            401 -> {
+                Toast.makeText(this, "Token expired, silakan login kembali", Toast.LENGTH_SHORT).show()
+                logout()
+            }
             403 -> Toast.makeText(this, "Akses ditolak", Toast.LENGTH_SHORT).show()
             404 -> Toast.makeText(this, "Endpoint tidak ditemukan", Toast.LENGTH_SHORT).show()
             else -> Toast.makeText(this, "Gagal memuat data ($code)", Toast.LENGTH_SHORT).show()
@@ -138,11 +140,11 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun handleException(e: Exception) {
-        Log.e(TAG, "Exception", e)
+        Log.e(TAG, "Exception saat mengambil data", e)
         val msg = when {
             e.message?.contains("timeout", true) == true -> "Koneksi timeout"
             e.message?.contains("Unable to resolve host", true) == true -> "Tidak dapat terhubung ke server"
-            else -> e.message
+            else -> e.localizedMessage ?: "Terjadi kesalahan"
         }
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
@@ -152,7 +154,8 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.dashboard_menu, menu); return true
+        menuInflater.inflate(R.menu.dashboard_menu, menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {

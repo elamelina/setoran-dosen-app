@@ -16,4 +16,5 @@
     <string name="error_login">Username atau password salah</string>
     <string name="error_network">Koneksi bermasalah</string>
     <string name="login_success">Login berhasil</string>
+    <string name="add_surat">Tambah Surat</string>
 </resources>

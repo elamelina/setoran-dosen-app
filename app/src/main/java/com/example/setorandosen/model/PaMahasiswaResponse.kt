@@ -50,5 +50,9 @@ data class InfoSetoran(
     @SerializedName("tgl_terakhir_setor")
     val tglTerakhirSetor: String?,
     @SerializedName("terakhir_setor")
-    val terakhirSetor: String
+    val terakhirSetor: String,
+    val id: String,
+    val tgl_setoran: String,
+    val tgl_validasi: String,
+    val dosen_yang_mengesahkan: Dosen
 )

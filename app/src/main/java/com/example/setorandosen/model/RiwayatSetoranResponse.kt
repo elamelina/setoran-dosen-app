@@ -1,14 +1,15 @@
+// File: RiwayatSetoranResponse.kt
 package com.example.setorandosen.model
 
 import com.google.gson.annotations.SerializedName
 
-data class MahasiswaSetoranResponse(
-    @SerializedName("status")
-    val status: String,
+data class RiwayatSetoranResponse(
+    @SerializedName("response")
+    val response: Boolean,
 
     @SerializedName("message")
     val message: String,
 
     @SerializedName("data")
-    val data: List<MahasiswaSetoran>
+    val data: List<LogSetoran>
 )
