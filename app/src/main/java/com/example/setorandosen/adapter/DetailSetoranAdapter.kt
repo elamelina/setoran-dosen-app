@@ -14,8 +14,7 @@ class DetailSetoranAdapter(
     private val suratList: List<DetailSurat>,
     private val logList: List<LogSetoran>,
     private val onDeleteSetoran: (DetailSurat) -> Unit,
-    private val onAddSetoran: (DetailSurat) -> Unit,
-    private val onValidateSetoran: (DetailSurat) -> Unit
+    private val onAddSetoran: (DetailSurat) -> Unit
 ) : RecyclerView.Adapter<DetailSetoranAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -41,7 +40,7 @@ class DetailSetoranAdapter(
 
         // Nama surat dan label
         holder.tvNamaSurat.text = surat.nama
-        holder.tvSyarat.text = "Syarat: (${surat.label})"
+        holder.tvSyarat.text = "Syarat:${surat.label}"
 
         if (surat.sudahSetor) {
             // Jika sudah setor

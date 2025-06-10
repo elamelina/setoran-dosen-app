@@ -22,14 +22,6 @@ interface ApiService {
     @POST("mahasiswa/setoran/{nim}")
     suspend fun simpanSetoran(
         @Header("Authorization") token: String,
-        @Path("nim") nim: String,
-        @Body request: SimpanSetoranRequest
-    ): Response<GenericResponse>
-
-
-    @GET("mahasiswa/setoran/{nim}/riwayat")
-    suspend fun getRiwayatSetoran(
-        @Header("Authorization") token: String,
         @Path("nim") nim: String
-    ): Response<RiwayatSetoranResponse>
+    ): Response<GenericResponse>
 }
