@@ -12,6 +12,7 @@ import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +20,6 @@ import com.example.setorandosen.adapter.PaMahasiswaAdapter
 import com.example.setorandosen.api.RetrofitClient
 import com.example.setorandosen.model.PaMahasiswa
 import com.example.setorandosen.ui.DetailSetoranActivity
-import com.example.setorandosen.LoginActivity
 import com.example.setorandosen.utils.SharedPreferencesHelper
 import kotlinx.coroutines.launch
 
@@ -155,12 +155,31 @@ class DashboardActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.dashboard_menu, menu)
+        menuInflater.inflate(R.menu.menu_theme, menu) // <- Tambahkan menu tema
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.action_logout -> { logout(); true }
-        R.id.action_refresh -> { loadPaMahasiswa(); true }
+        R.id.action_logout -> {
+            logout()
+            true
+        }
+        R.id.action_refresh -> {
+            loadPaMahasiswa()
+            true
+        }
+        R.id.action_light_mode -> {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            true
+        }
+        R.id.action_dark_mode -> {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            true
+        }
+        R.id.action_system_default -> {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            true
+        }
         else -> super.onOptionsItemSelected(item)
     }
 

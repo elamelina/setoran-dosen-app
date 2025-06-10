@@ -5,40 +5,45 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color">
+    android:background="@color/background_color"
+    tools:context=".ui.DetailSetoranActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
+            app:titleTextColor="@android:color/white" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:gravity="center_horizontal"
+            android:paddingBottom="24dp">
 
-            <!-- Header Info Card -->
+            <!-- Card Mahasiswa -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.MaterialComponents.CardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
+                app:cardElevation="6dp"
+                app:cardCornerRadius="12dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -48,30 +53,30 @@
 
                     <TextView
                         android:id="@+id/tvNamaMahasiswa"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:text="Nama Mahasiswa"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary" />
+                        android:textColor="@color/text_primary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/tvNimMahasiswa"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:text="NIM: 12345678"
+                        android:layout_marginTop="4dp"
                         android:textSize="14sp"
                         android:textColor="@color/text_secondary"
-                        android:layout_marginTop="4dp" />
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/tvEmail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:text="Email: mahasiswa@email.com"
+                        android:layout_marginTop="2dp"
                         android:textSize="14sp"
                         android:textColor="@color/text_secondary"
-                        android:layout_marginTop="2dp" />
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -81,44 +86,42 @@
 
                         <TextView
                             android:id="@+id/tvAngkatan"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:text="Angkatan 2021"
                             android:textSize="12sp"
-                            android:textColor="@color/text_secondary" />
+                            android:layout_weight="1"
+                            android:textColor="@color/text_secondary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content" />
 
                         <TextView
                             android:id="@+id/tvSemester"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:text="Semester 5"
                             android:textSize="12sp"
-                            android:textColor="@color/text_secondary" />
-
+                            android:layout_weight="1"
+                            android:textColor="@color/text_secondary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content" />
                     </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvDosenPa"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:text="PA: Dr. Nama Dosen"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary"
-                        android:layout_marginTop="4dp" />
-
+                        android:layout_marginTop="4dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Progress Card -->
+            <!-- Card Progress -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.MaterialComponents.CardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp">
+                app:cardCornerRadius="12dp"
+                app:cardElevation="6dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -127,12 +130,12 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:text="Progress Setoran"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp" />
 
                     <LinearLayout
@@ -143,23 +146,22 @@
 
                         <TextView
                             android:id="@+id/tvTotalProgress"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:text="0/114"
                             android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="@color/primary_color" />
+                            android:textColor="@color/primary_color"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content" />
 
                         <TextView
                             android:id="@+id/tvPersentaseProgress"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:text="0%"
                             android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="@color/primary_color" />
-
+                            android:textColor="@color/primary_color"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
                     </LinearLayout>
 
                     <ProgressBar
@@ -167,24 +169,22 @@
                         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="8dp"
-                        android:max="114"
                         android:progress="0"
+                        android:max="114"
                         android:progressTint="@color/primary_color"
                         android:layout_marginBottom="8dp" />
 
                     <TextView
                         android:id="@+id/tvTerakhirSetor"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:text="Terakhir setor: Belum ada setoran"
                         android:textSize="12sp"
-                        android:textColor="@color/text_secondary" />
-
+                        android:textColor="@color/text_secondary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Tab Layout -->
+            <!-- TabLayout -->
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
                 android:layout_width="match_parent"
@@ -196,25 +196,22 @@
                 app:tabSelectedTextColor="@color/primary_color"
                 app:tabIndicatorColor="@color/primary_color" />
 
-            <!-- Content RecyclerView -->
+            <!-- RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvContent"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_detail_setoran" />
-
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Loading Progress Bar -->
+    <!-- Loading ProgressBar -->
     <ProgressBar
         android:id="@+id/progressBar"
+        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
